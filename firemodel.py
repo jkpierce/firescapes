@@ -81,13 +81,14 @@ class Burner:
             # just a print block to explain what's happening...
             s1 = grid.x_of_node[center]
             s2 = grid.y_of_node[center]
-            s3 = len(changed_nodes)
-            print('fire at ({},{}) with {} nodes inflamed'.format(s1,s2,s3))
+            A = len(changed_nodes)*self.dx**2/1e6 # area of the fire if it occcurred
+            # units of A are km^2. 
+            print(r'fire at ({},{}) of area {} square km.'.format(s1,s2,round(A,2)))
             
             
             # save the time and magnitude of the fire
             self.fireTimes.append(t) # time at which the fire happened
-            self.fireSizes.append(s3*self.dx**2) # area of the fire which happened.
+            self.fireSizes.append(A) # area of the fire which happened.
                         
         
     def _within(self,center, space, grid):
