@@ -104,3 +104,4 @@ class Burner:
         mask = grid.calc_distances_of_nodes_to_point(centerPoint) < self.R_fire # mask of nodes in radius
         # all nodes within R_fire of the centerPoint
         return np.arange(mask.size)[mask] # return indices of all nodes within distance R_fire
+

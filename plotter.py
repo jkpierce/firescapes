@@ -3,7 +3,7 @@ from landlab.plot import graph
 import numpy as np
 
 
-def fireplot(grid, ngrid, K_sed, K_sed_boost, K_sed0, zmax, zmin):
+def fireplot(grid, ngrid, K_sed, K_sed_boost, K_sed0):
     """
     * grid is the landlab grid.
     * ngrid is the network model grid output by `create_network_from_raster`.
@@ -14,14 +14,14 @@ def fireplot(grid, ngrid, K_sed, K_sed_boost, K_sed0, zmax, zmin):
     """
     
     pinks = plt.get_cmap('pink') # pink colormap
-    greys = plt.get_cmap('binary_r')# grey colormap
+    greys = plt.get_cmap('binary_r') # grey colormap
 
-    # set up a blank image... 
+    # set up a blank image
     im = np.zeros(shape=(*grid.shape,4)) # rgba format. One pixel per grid cell
 
     # get the elevations from the grid
     z = grid.at_node['topographic__elevation']
-    zs = (z-zmin)/(zmax-zmin) # scale the elevations for plotting.
+    zs = ( z - z.min() ) / ( z.max() - z.min() ) # scale the elevations for plotting.
 
     # determine "burned" locations in the image
     tol = K_sed_boost*0.25 + K_sed0 # tolerance for "burned"
@@ -39,11 +39,10 @@ def fireplot(grid, ngrid, K_sed, K_sed_boost, K_sed0, zmax, zmin):
     im[~smask] = vals.flatten() # fill in unburned colors
 
     # fill in all edges with the color black
-
-        # https://stackoverflow.com/questions/48097068/how-to-get-boundaries-of-an-numpy-array
-    edge = np.ones(im[:,:,0].shape, dtype=bool)
-    edge[im[:,:,0].ndim * (slice(1, -1),)] = False
-    im[edge]=np.array([0,0,0,1]) # all edge nodes are black.
+    # https://stackoverflow.com/questions/48097068/how-to-get-boundaries-of-an-numpy-array
+    edge_mask = np.ones(im[:,:,0].shape, dtype=bool)
+    edge_mask[im[:,:,0].ndim * (slice(1, -1),)] = False
+    im[edge_mask]=np.array([0,0,0,1]) # all edge nodes are black.
     
     # plot the image..
     x = np.arange(0,grid.spacing[0]*grid.shape[0],grid.spacing[0])
